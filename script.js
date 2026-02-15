@@ -1,7 +1,9 @@
+const kiwiMode = true;
+
 const { Client, GatewayIntentBits } = require('discord.js');
 const { Guilds, GuildMessages, MessageContent } = GatewayIntentBits;
 const client = new Client({ intents: [Guilds, GuildMessages, MessageContent] });
-const { token } = require('./token.js');
+const { token } = require(kiwiMode ? './token_kiwi.js' : './token.js');
 
 client.login(token);
 
@@ -34,4 +36,4 @@ client.on("messageCreate", async (message) => {
 
 });
 
-client.once('clientReady', () => console.log('hello, world!'));
+client.once('clientReady', () => console.log(kiwiMode ? 'KIWI KIWI' : 'default mode on!'));
