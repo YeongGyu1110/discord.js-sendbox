@@ -32,27 +32,6 @@ client.on("messageCreate", async (message) => {
     // message.channel.send에서 .channel 제거해서 message.send으로 간략하게 하기
     message.send = (content) => message.channel.send(content);
 
-
-
-    /*
-    증감 연산자 후위형 테스트
-
-    1. count++으로 증가 전의 값 반환하여 보여주기
-    2. count +1 하기.
-    3. +1 이 완료된 count를 읽어 count 값을 보여준다.
-
-    결론: 후위형 증가 연산자는 값이 변하기 전의 값을 반환후, 값을 증가시킨다.
-    */
-
-    let count = 0;
-
-    if (msg == "카운트") {
-        message.send(`이전 카운드: ${count++}\n현재 카운트: ${count}`);
-    }
-
-
-
-
 });
 
 client.once('clientReady', () => console.log('hello, world!'));
