@@ -5,21 +5,22 @@ const client = new Client({ intents: [Guilds, GuildMessages, MessageContent] });
 const kiwiMode = true;
 const { token } = require(kiwiMode ? './token_kiwi.js' : './token.js');
 
+const DB = {};
+
+DB.saveData = function(userData) {
+    fs.writeFileSync(`${fileName}`, JSON.stringify(userData, null, 2));
+}
+
+DB.loadData = function() {
+    return JSON.parse(fs.readFileSync(fileName, 'utf-8'));
+}
 
 let userData = {};
 
 const fileName = './userDataBase/userData.json';
 
 if (fs.existsSync(fileName)) {
-    userData = loadUserData();
-}
-
-function saveUserData(userData) {
-    fs.writeFileSync(`${fileName}`, JSON.stringify(userData, null, 2));
-}
-
-function loadUserData() {
-    return JSON.parse(fs.readFileSync(fileName, 'utf-8'));
+    userData = DB.loadData();
 }
 
 function getUserData(userId, username) {
@@ -29,7 +30,7 @@ function getUserData(userId, username) {
             name: username,
             money: 0
         };
-        saveUserData(userData);
+        DB.saveData(userData);
     } else {
         console.log(`유저에 대한 값이 이미 있습니다!`);
     }
@@ -53,7 +54,7 @@ client.on("messageCreate", async (message) => {
     var user = userData[userId];
     if (msg == "hello") message.send(`hello.`);
 
-    saveUserData(userData);
+    DB.saveData(userData);
 });
 
 client.once('clientReady', () => console.log(kiwiMode ? 'KIWI KIWI' : 'default mode on!'));
