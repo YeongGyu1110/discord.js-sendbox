@@ -23,13 +23,20 @@ if (fs.existsSync(fileName)) {
     userData = DB.loadData();
 }
 
+const defualUserData = {
+    money: 0,
+    level: 1
+}
+
+function deepCopy(target) {
+    return JSON.parse(JSON.stringify(target));
+}
+
 function getUserData(userId, username) {
     if (!userData[userId]) {
-        userData[userId] = {
-            id: userId,
-            name: username,
-            money: 0
-        };
+        userData[userId] = deepCopy(defualUserData);
+        userData[userId].name = username;
+        userData[userId].id = userId;
         DB.saveData(userData);
     } else {
         console.log(`유저에 대한 값이 이미 있습니다!`);
