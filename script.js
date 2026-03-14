@@ -7,6 +7,12 @@ const { token } = require(kiwiMode ? './token_kiwi.js' : './token.js');
 
 const DATA = {};
 
+const admin = {
+    id: null,
+    name: null,
+    money: 0
+}
+
 DATA.saveData = function(userData) {
     fs.writeFileSync(`${fileName}`, JSON.stringify(userData, null, 2));
 }
@@ -18,7 +24,7 @@ DATA.copyUserData = function(target) {
 }
 DATA.getUserData = function(userId, username) {
     if (!userData[userId]) {
-        userData[userId] = DATA.copyUserData(defualUserData);
+        userData[userId] = DATA.copyUserData(admin);
         userData[userId].name = username;
         userData[userId].id = userId;
         DATA.saveData(userData);
@@ -34,11 +40,6 @@ const fileName = './userDataBase/userData.json';
 
 if (fs.existsSync(fileName)) {
     userData = DATA.loadData();
-}
-
-const defualUserData = {
-    money: 0,
-    level: 1
 }
 
 client.on("messageCreate", async (message) => {
