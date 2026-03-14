@@ -2,7 +2,7 @@ const { Client, GatewayIntentBits } = require('discord.js');
 const fs = require('fs');
 const { Guilds, GuildMessages, MessageContent } = GatewayIntentBits;
 const client = new Client({ intents: [Guilds, GuildMessages, MessageContent] });
-const kiwiMode = true;
+const kiwiMode = false;
 const { token } = require(kiwiMode ? './token_kiwi.js' : './token.js');
 
 const DB = {};
