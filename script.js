@@ -35,6 +35,20 @@ DATA.getUserData = function(userId, username) {
     }
     return userData[userId];
 };
+DATA.migration = function(target, schema) {
+    let isUpdated = false;
+
+    for (const id in target) {
+        for (const prop in schema) {
+            if (target[id][prop] === undefined) {
+                target[id][prop] = DATA.copyUserData(schema[prop]);
+                isUpdated = true;
+            }
+        }
+    }
+    // 업데이트 여부 리턴하기
+    return isUpdated;
+}
 
 let userData = {};
 
@@ -42,25 +56,8 @@ if (fs.existsSync(fileName)) {
     // 로드된 json 값들을 모두 userData에 저장하기.
     userData = DATA.loadData();
 
-    // 업데이트되었는지.
-    let isUpdated = false;
-
-    // 각 유저 객체를 하나하나 돌면서.
-    for (const userId in userData) {
-        // admin 객체의 각 프로퍼티를 확인하며 돈다.
-        for (const property in admin) {
-            // 만약 유저 객체 중 undefined와 완전히 일치하는 값이 발견되면
-            if (userData[userId][property] === undefined) {
-                // 즉시 그 undefined 값을 admin에 해당하는 값으로 채운다
-                userData[userId][property] = DATA.copyUserData(admin[property]);
-                // 그리고는 유저 객체에 바뀐 값이 있다고 말하기.
-                isUpdated = true;
-            }
-        }
-    }
-
-    // 반복문에서 빠져나온 후 isUpdated 변수가 true로 되어있으면 유저 값이 바꼈다는 소리니, 유저 값들 JSON에 저장하기.
-    if (isUpdated) {
+    // 마이그레이션 함수의 boolean형 return 값을 조건문에 사용하기.
+    if (DATA.migration(userData, admin)) {
         DATA.saveData(userData);
         console.log(`마이그레이션 완료!`);
     }
