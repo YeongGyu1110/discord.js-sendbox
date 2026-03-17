@@ -29,7 +29,7 @@ DATA.getUserData = function(userId, username) {
         userData[userId].id = userId;
         DATA.saveData(userData);
     } else {
-        console.log(`유저에 대한 값이 이미 있습니다!`);
+        // 이 유저는 객체가 이미 있다는 뜻.
     }
     return userData[userId];
 }
@@ -39,7 +39,28 @@ let userData = {};
 const fileName = './userDataBase/userData.json';
 
 if (fs.existsSync(fileName)) {
+    // 로드된 json 값들을 모두 userData에 저장하기.
     userData = DATA.loadData();
+
+    // 업데이트되었는지.
+    let isUpdated = false;
+
+    // 각 유저 객체를 하나하나 돌면서.
+    for (const userId in userData) {
+        // admin 객체의 각 프로퍼티를 확인하며 돈다.
+        for (const property in admin) {
+            // 만약 유저 객체 중 undefined와 완전히 일치하는 값이 발견되면
+            if (userData[userId][property] === undefined) {
+                // 즉시 그 undefined 값을 admin에 해당하는 값으로 채운다
+                userData[userId][property] = DATA.copyUserData[admin][property];
+                // 그리고는 유저 객체에 바뀐 값이 있다고 말하기.
+                isUpdated = true;
+            }
+        }
+    }
+
+    // 반복문에서 빠져나온 후 isUpdated 변수가 true로 되어있으면 유저 값이 바꼈다는 소리니, 유저 값들 JSON에 저장하기.
+    if (isUpdated) DATA.saveData(userData);
 }
 
 client.on("messageCreate", async (message) => {
