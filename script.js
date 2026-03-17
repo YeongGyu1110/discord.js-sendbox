@@ -21,12 +21,12 @@ DATA.saveData = function(userData) {
 DATA.loadData = function() {
     return JSON.parse(fs.readFileSync(fileName, 'utf-8'));
 };
-DATA.copyUserData = function(target) {
+DATA.copyData = function(target) {
     return JSON.parse(JSON.stringify(target));
 };
 DATA.getUserData = function(userId, username) {
     if (!userData[userId]) {
-        userData[userId] = DATA.copyUserData(admin);
+        userData[userId] = DATA.copyData(admin);
         userData[userId].name = username;
         userData[userId].id = userId;
         DATA.saveData(userData);
@@ -41,7 +41,7 @@ DATA.migration = function(target, schema) {
     for (const id in target) {
         for (const prop in schema) {
             if (target[id][prop] === undefined) {
-                target[id][prop] = DATA.copyUserData(schema[prop]);
+                target[id][prop] = DATA.copyData(schema[prop]);
                 isUpdated = true;
             }
         }
