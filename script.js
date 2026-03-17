@@ -10,8 +10,11 @@ const DATA = {};
 const admin = {
     id: null,
     name: null,
-    money: 0
+    money: 0,
+    level: 1
 }
+
+const fileName = './userDataBase/userData.json';
 
 DATA.saveData = function(userData) {
     fs.writeFileSync(`${fileName}`, JSON.stringify(userData, null, 2));
@@ -36,8 +39,6 @@ DATA.getUserData = function(userId, username) {
 
 let userData = {};
 
-const fileName = './userDataBase/userData.json';
-
 if (fs.existsSync(fileName)) {
     // 로드된 json 값들을 모두 userData에 저장하기.
     userData = DATA.loadData();
@@ -52,7 +53,7 @@ if (fs.existsSync(fileName)) {
             // 만약 유저 객체 중 undefined와 완전히 일치하는 값이 발견되면
             if (userData[userId][property] === undefined) {
                 // 즉시 그 undefined 값을 admin에 해당하는 값으로 채운다
-                userData[userId][property] = DATA.copyUserData[admin][property];
+                userData[userId][property] = DATA.copyUserData(admin[property]);
                 // 그리고는 유저 객체에 바뀐 값이 있다고 말하기.
                 isUpdated = true;
             }
@@ -60,7 +61,10 @@ if (fs.existsSync(fileName)) {
     }
 
     // 반복문에서 빠져나온 후 isUpdated 변수가 true로 되어있으면 유저 값이 바꼈다는 소리니, 유저 값들 JSON에 저장하기.
-    if (isUpdated) DATA.saveData(userData);
+    if (isUpdated) {
+        DATA.saveData(userData);
+        console.log(`마이그레이션 완료!`);
+    }
 }
 
 client.on("messageCreate", async (message) => {
