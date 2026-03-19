@@ -76,7 +76,7 @@ client.on("messageCreate", async (message) => {
 
     if (msg == "login") message.send(`${!!user}`);
     if (msg == 'create') {
-        DATA.getUserData(userId, userName);
+        user = DATA.getUserData(userId, userName);
         message.send(`작업 완료`);
     }
 
