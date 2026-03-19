@@ -1,5 +1,6 @@
 const { Client, GatewayIntentBits } = require('discord.js');
 const fs = require('fs');
+const { measureMemory } = require('vm');
 const { Guilds, GuildMessages, MessageContent } = GatewayIntentBits;
 const client = new Client({ intents: [Guilds, GuildMessages, MessageContent] });
 const kiwiMode = false;
@@ -76,8 +77,13 @@ client.on("messageCreate", async (message) => {
 
     if (msg == "login") message.send(`${!!user}`);
     if (msg == 'create') {
-        user = DATA.getUserData(userId, userName);
-        message.send(`작업 완료`);
+        if (user === undefined) {
+            user = DATA.getUserData(userId, userName);
+            message.send(`유저 객체를 생성했습니다.\n생성 대상: ${user.name}`);
+        } else {
+            message.send(`유저 객체가 이미 있습니다.\n대상: ${user.name}`);
+        }
+        
     }
 
     // 유저 객체가 undefined라면 즉시 함수 종료하기
