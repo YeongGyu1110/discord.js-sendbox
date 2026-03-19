@@ -80,8 +80,8 @@ client.on("messageCreate", async (message) => {
         message.send(`작업 완료`);
     }
 
-    // 유저 객체가 생성되지 않는 한 undefined, 즉 falsy라서 var user 위로 땡겨도 됨
-    if (!userData[userId]) return;
+    // 유저 객체가 undefined라면 즉시 함수 종료하기
+    if (user === undefined) return;
 
     if (msg == "hello") message.send(`hello.`);
 
