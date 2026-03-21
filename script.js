@@ -1,9 +1,11 @@
 const { Client, GatewayIntentBits } = require('discord.js');
-const fs = require('fs');
 const { Guilds, GuildMessages, MessageContent } = GatewayIntentBits;
 const client = new Client({ intents: [Guilds, GuildMessages, MessageContent] });
+
 const kiwiMode = false;
 const { token } = require(kiwiMode ? './token_kiwi.js' : './token.js');
+
+const fs = require('fs');
 
 const admin = {
     id: null,
@@ -29,7 +31,6 @@ DATA.getUserData = function(userId, username) {
         userData[userId] = DATA.copyData(admin);
         userData[userId].name = username;
         userData[userId].id = userId;
-        DATA.saveData(userData);
     } else {
         // 이 유저는 객체가 이미 있다는 뜻.
     }
