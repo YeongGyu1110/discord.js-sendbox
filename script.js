@@ -1,6 +1,5 @@
 const { Client, GatewayIntentBits } = require('discord.js');
 const fs = require('fs');
-// const { measureMemory } = require('vm');
 const { Guilds, GuildMessages, MessageContent } = GatewayIntentBits;
 const client = new Client({ intents: [Guilds, GuildMessages, MessageContent] });
 const kiwiMode = false;
