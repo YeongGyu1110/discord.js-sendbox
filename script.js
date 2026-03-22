@@ -17,10 +17,10 @@ const admin = {
 const fileName = './userDataBase/userData.json';
 
 const DATA = {};
-DATA.saveData = function(userData) {
-    fs.writeFileSync(`${fileName}`, JSON.stringify(userData, null, 2));
+DATA.saveData = function(fileName, data) {
+    fs.writeFileSync(`${fileName}`, JSON.stringify(data, null, 2));
 };
-DATA.loadData = function() {
+DATA.loadData = function(fileName) {
     return JSON.parse(fs.readFileSync(fileName, 'utf-8'));
 };
 DATA.copyData = function(target) {
@@ -55,11 +55,11 @@ let userData = {};
 
 if (fs.existsSync(fileName)) {
     // 로드된 json 값들을 모두 userData에 저장하기.
-    userData = DATA.loadData();
+    userData = DATA.loadData(fileName);
 
     // 마이그레이션 함수의 boolean형 return 값을 조건문에 사용하기.
     if (DATA.migration(userData, admin)) {
-        DATA.saveData(userData);
+        DATA.saveData(fileName, userData);
         console.log(`마이그레이션 완료!`);
     }
 }
@@ -91,7 +91,7 @@ client.on("messageCreate", async (message) => {
 
     if (msg == "hello") message.send(`hello.`);
 
-    DATA.saveData(userData);
+    DATA.saveData(fileName, userData);
 });
 
 client.once('clientReady', () => console.log(kiwiMode ? 'KIWI KIWI' : 'default mode on!'));
