@@ -37,12 +37,34 @@ DATA.getUserData = function(userId, username) {
     return userData[userId];
 };
 DATA.migration = function(target, schema) {
+
+    // 아규먼트로 전달 받은 target 파라미터는 모든 유저의 데이터다.
+    // 아규먼트로 전달 받은 schema 파라미터는 그냥 admin 객체이다.
+    
     let isUpdated = false;
 
     for (const id in target) {
         for (const prop in schema) {
             if (target[id][prop] === undefined) {
                 target[id][prop] = DATA.copyData(schema[prop]);
+                isUpdated = true;
+            }
+        }
+    }
+    
+    // 전체 유저 데이터 하나하나 둘러본다.
+    for (const id in target) {
+        // 유저가 가진 프로퍼티를 하나하나 둘러본다.
+        for (const prop in target[id]) {
+            /*
+                만약 유저의 프로퍼티 값이 undefined가 아니고, (값이 있고)
+                admin 객체의 프로퍼티가 undefined라면 (admin 객체에는 없는 값이라면)
+
+                유저 객체에서 그 프로퍼터를 삭제한다.
+                그리고 업데이트 된거 있다고 알린다.
+            */ 
+            if (schema[prop] === undefined && target[id] !== undefined) {
+                delete target[id][prop];
                 isUpdated = true;
             }
         }
