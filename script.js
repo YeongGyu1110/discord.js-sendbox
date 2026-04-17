@@ -2,8 +2,28 @@ const { Client, GatewayIntentBits } = require('discord.js');
 const { Guilds, GuildMessages, MessageContent } = GatewayIntentBits;
 const client = new Client({ intents: [Guilds, GuildMessages, MessageContent] });
 
-const kiwiMode = false;
-const { token } = require(kiwiMode ? './token_kiwi.js' : './token.js');
+
+/*
+0: 기본
+1: 키위
+2: 텍스트 기반
+*/
+const loginNumber = 2;
+
+function readTokenJSON() {
+    // return JSON.parse(fs.readFileSync('./token.json', 'utf-8'));
+    return require('./token.json');
+}
+
+function getLoginToken(loginNumber) {
+    return readTokenJSON()[loginNumber].token;
+}
+
+function getLoginMSG(loginNumber) {
+    return readTokenJSON()[loginNumber].name;
+}
+
+const token = getLoginToken(loginNumber);
 
 const fs = require('fs');
 
@@ -116,5 +136,5 @@ client.on("messageCreate", async (message) => {
     DATA.saveData(fileName, userData);
 });
 
-client.once('clientReady', () => console.log(kiwiMode ? 'KIWI KIWI' : 'default mode on!'));
+client.once('clientReady', () => console.log(getLoginMSG(loginNumber) + ' is ready!'));
 client.login(token);
