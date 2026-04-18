@@ -4,26 +4,21 @@ const client = new Client({ intents: [Guilds, GuildMessages, MessageContent] });
 
 
 /*
-0: 기본
-1: 키위
-2: 텍스트 기반
+"봇이름": {
+    "name": "봇 이름",
+    "token": "봇 토큰값"
+}
+즉시 실행 함수로 JSON에서 봇 객체를 가져와 bot 상수에 저장한다.
 */
-const loginNumber = 2;
+const bot = (() => {
+    const bot = require('./token.json');
 
-function readTokenJSON() {
-    // return JSON.parse(fs.readFileSync('./token.json', 'utf-8'));
-    return require('./token.json');
-}
+    // 작동시킬 봇을 변경하려면 요놈을 수정
+    // 어차피 끝나면 가비지 컬렉터 대상이 되니 보기라도 좋게 변수 하나 더 만들기
+    const targetBot = bot.textBased;
 
-function getLoginToken(loginNumber) {
-    return readTokenJSON()[loginNumber].token;
-}
-
-function getLoginMSG(loginNumber) {
-    return readTokenJSON()[loginNumber].name;
-}
-
-const token = getLoginToken(loginNumber);
+    return targetBot;
+})();
 
 const fs = require('fs');
 
@@ -136,5 +131,6 @@ client.on("messageCreate", async (message) => {
     DATA.saveData(fileName, userData);
 });
 
-client.once('clientReady', () => console.log(getLoginMSG(loginNumber) + ' is ready!'));
-client.login(token);
+// 봇 객체에서 name 프로퍼티에다가 is ready! 붙여서 출력하기
+client.once('clientReady', () => console.log(bot.name + ' is ready!'));
+client.login(bot.token);
