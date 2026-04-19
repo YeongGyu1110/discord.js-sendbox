@@ -2,8 +2,23 @@ const { Client, GatewayIntentBits } = require('discord.js');
 const { Guilds, GuildMessages, MessageContent } = GatewayIntentBits;
 const client = new Client({ intents: [Guilds, GuildMessages, MessageContent] });
 
-const kiwiMode = false;
-const { token } = require(kiwiMode ? './token_kiwi.js' : './token.js');
+
+/*
+"봇이름": {
+    "name": "봇 이름",
+    "token": "봇 토큰값"
+}
+즉시 실행 함수로 JSON에서 봇 객체를 가져와 bot 상수에 저장한다.
+*/
+const bot = (() => {
+    const bot = require('./token.json');
+
+    // 작동시킬 봇을 변경하려면 요놈을 수정
+    // 어차피 끝나면 가비지 컬렉터 대상이 되니 보기라도 좋게 변수 하나 더 만들기
+    const targetBot = bot.textBased;
+
+    return targetBot;
+})();
 
 const fs = require('fs');
 
@@ -116,5 +131,6 @@ client.on("messageCreate", async (message) => {
     DATA.saveData(fileName, userData);
 });
 
-client.once('clientReady', () => console.log(kiwiMode ? 'KIWI KIWI' : 'default mode on!'));
-client.login(token);
+// 봇 객체에서 name 프로퍼티에다가 is ready! 붙여서 출력하기
+client.once('clientReady', () => console.log(bot.name + ' is ready!'));
+client.login(bot.token);
