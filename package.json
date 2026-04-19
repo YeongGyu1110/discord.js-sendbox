@@ -1,5 +1,24 @@
 {
   "dependencies": {
-    "discord.js": "^14.25.1"
-  }
+    "discord.js": "^14.26.3"
+  },
+  "name": "discord.js-sendbox",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YeongGyu1110/discord.js-sendbox.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/YeongGyu1110/discord.js-sendbox/issues"
+  },
+  "homepage": "https://github.com/YeongGyu1110/discord.js-sendbox#readme"
 }
