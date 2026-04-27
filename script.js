@@ -108,15 +108,20 @@ client.on("messageCreate", async (message) => {
     message.send = (content) => message.channel.send(content);
     const msg = message.content.toLocaleLowerCase().trim();
 
-    if (msg == "on" && !room.includes(message.channel.id)) {
-        room.push(message.channel.id);
-        message.send(`활성화되었습니다.\n대상 이름: ${message.channel.name}\n대상 id: ${message.channel.id} `);
-    }
-    if (msg == "off" && room.includes(message.channel.id)) {
-        room.splice(room.indexOf(message.channel.id), 1);
-        message.send(`비활성화되었습니다.\n대상 이름: ${message.channel.name}\n대상 id: ${message.channel.id} `);
+    if (msg == "on") {
+        // indexOf는 찾는 값이 배열에 없는 경우 -1을 반환함
+        if (room.indexOf(message.channel.id) == -1) {
+            room.push(message.channel.id);
+            message.send(`활성화되었습니다.\n대상 이름: ${message.channel.name}\n대상 id: ${message.channel.id}`);            
+        } else {
+            message.send(`이미 활성화되었습니다.\n대상 이름: ${message.channel.name}\n대상 id: ${message.channel.id}`);
+        }
     }
     if (!room.includes(message.channel.id)) return;
+    if (msg == "off") {
+        room.splice(room.indexOf(message.channel.id), 1);
+        message.send(`비활성화되었습니다.\n대상 이름: ${message.channel.name}\n대상 id: ${message.channel.id}`);
+    }
 
     const userId = message.author.id;
     const userName = message.author.username;
