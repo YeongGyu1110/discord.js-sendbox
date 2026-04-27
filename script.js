@@ -1,3 +1,4 @@
+const { channel } = require('diagnostics_channel');
 const { Client, GatewayIntentBits } = require('discord.js');
 const { Guilds, GuildMessages, MessageContent } = GatewayIntentBits;
 const client = new Client({ intents: [Guilds, GuildMessages, MessageContent] });
@@ -101,10 +102,22 @@ if (fs.existsSync(fileName)) {
     }
 }
 
+let room = [];
+
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
     message.send = (content) => message.channel.send(content);
     const msg = message.content.toLocaleLowerCase().trim();
+
+    if (msg == "on" && !room.includes(message.channel.id)) {
+        room.push(message.channel.id);
+        message.send(`활성화되었습니다.\n대상 이름: ${message.channel.name}\n대상 id: ${message.channel.id} `);
+    }
+    if (msg == "off" && room.includes(message.channel.id)) {
+        room.splice(room.indexOf(message.channel.id), 1);
+        message.send(`비활성화되었습니다.\n대상 이름: ${message.channel.name}\n대상 id: ${message.channel.id} `);
+    }
+    if (!room.includes(message.channel.id)) return;
 
     const userId = message.author.id;
     const userName = message.author.username;
