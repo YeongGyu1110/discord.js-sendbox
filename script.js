@@ -117,7 +117,7 @@ client.on("messageCreate", async (message) => {
             message.send(`이미 활성화되었습니다.\n대상 이름: ${message.channel.name}\n대상 id: ${message.channel.id}`);
         }
     }
-    if (!room.includes(message.channel.id)) return;
+    // if (!room.includes(message.channel.id)) return;
     if (msg == "off") {
         room.splice(room.indexOf(message.channel.id), 1);
         message.send(`비활성화되었습니다.\n대상 이름: ${message.channel.name}\n대상 id: ${message.channel.id}`);
