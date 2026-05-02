@@ -29,8 +29,8 @@ const admin = {
     level: 1
 };
 
-const fileName = './userDataBase/userData.json';
-const roomFileName = './userDataBase/roomData.json';
+const fileName = './database/userData.json';
+const roomFileName = './database/roomData.json';
 
 const DATA = {};
 DATA.saveData = function(fileName, data) {
