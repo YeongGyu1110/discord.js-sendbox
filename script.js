@@ -30,6 +30,7 @@ const admin = {
 };
 
 const fileName = './userDataBase/userData.json';
+const roomFileName = './userDataBase/roomData.json';
 
 const DATA = {};
 DATA.saveData = function(fileName, data) {
@@ -112,6 +113,7 @@ client.on("messageCreate", async (message) => {
         // indexOf는 찾는 값이 배열에 없는 경우 -1을 반환함
         if (room.indexOf(message.channel.id) == -1) {
             room.push(message.channel.id);
+            DATA.saveData(roomFileName, room);
             message.send(`활성화되었습니다.\n대상 이름: ${message.channel.name}\n대상 id: ${message.channel.id}`);            
         } else {
             message.send(`이미 활성화되었습니다.\n대상 이름: ${message.channel.name}\n대상 id: ${message.channel.id}`);
@@ -120,6 +122,7 @@ client.on("messageCreate", async (message) => {
     // if (!room.includes(message.channel.id)) return;
     if (msg == "off") {
         room.splice(room.indexOf(message.channel.id), 1);
+        DATA.saveData(roomFileName, room);
         message.send(`비활성화되었습니다.\n대상 이름: ${message.channel.name}\n대상 id: ${message.channel.id}`);
     }
 
