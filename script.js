@@ -29,15 +29,24 @@ const admin = {
     level: 1
 };
 
-const fileName = './database/userData.json';
-const roomFileName = './database/roomData.json';
+const folderName = 'database';
+const fileName = 'userData.json';
+const roomFileName = 'roomData.json';
 
 const DATA = {};
-DATA.saveData = function(fileName, data) {
-    fs.writeFileSync(`${fileName}`, JSON.stringify(data, null, 2));
+/*
+folder 파라미터 기본값 지정. 
+saveData 호출 시 세 번째 아규먼트를 안주면 folderName 변수 값을 이름으로 하는 폴더 생성,
+그리고 그 폴더에 fileName을 이름으로 하는 json 파일 생성하기
+*/
+DATA.saveData = function(fileName, data, folder = folderName) {
+    if (!fs.existsSync(folder)) {
+        fs.mkdirSync(folder);
+    }
+    fs.writeFileSync(`${folder}/${fileName}`, JSON.stringify(data, null, 2));
 };
-DATA.loadData = function(fileName) {
-    return JSON.parse(fs.readFileSync(fileName, 'utf-8'));
+DATA.loadData = function(fileName, folder = folderName) {
+    return JSON.parse(fs.readFileSync(`${folder}/${fileName}`, 'utf-8'));
 };
 DATA.copyData = function(target) {
     return JSON.parse(JSON.stringify(target));
