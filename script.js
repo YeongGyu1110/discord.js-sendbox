@@ -46,6 +46,7 @@ DATA.saveData = function(fileName, data, folder = folderName) {
     fs.writeFileSync(`${folder}/${fileName}`, JSON.stringify(data, null, 2));
 };
 DATA.loadData = function(fileName, folder = folderName) {
+    if (!fs.existsSync(`${folder}/${fileName}`)) return null;
     return JSON.parse(fs.readFileSync(`${folder}/${fileName}`, 'utf-8'));
 };
 DATA.copyData = function(target) {
@@ -99,37 +100,34 @@ DATA.migration = function(target, schema) {
 }
 
 let userData = (() => {
-    // userData 파일이 있으면
-    if (fs.existsSync(`./${folderName}/${userDataFileName}`)) {
-        // 일단 그 파일 읽어서 data 변수에 저장,
-        let data = DATA.loadData(userDataFileName);
-        
-        /*
-        일단 마이그레이션 시켜보기
+    // 일단 그 파일 읽어서 data 변수에 저장,
+    let data = DATA.loadData(userDataFileName);
     
-        "마이그레이션 함수는 data 객체 자체를 변경시킨다."
-        따라서 값 할당이 없어도 메소드의 반환값이 true라면 data 객체가 수정된 상태다.
-        */ 
-        if (DATA.migration(data, admin)) {
-            // 만약 true라면 data 객체가 수정되었다는 뜻이니, 파일에 저장하기
-            DATA.saveData(userDataFileName, data);
-            console.log(`마이그레이션 완료!`);
-        }
-        
-        // 다타 객체 반환하기
-        return data; 
+    // 만약 loadData가 null을 반환하고 data에 할당했다면, 빈 객체 반환하고 IIFE 종료하기
+    if (data === null) return {};
+
+    /*
+    일단 마이그레이션 시켜보기
+
+    "마이그레이션 함수는 data 객체 자체를 변경시킨다."
+    따라서 값 할당이 없어도 메소드의 반환값이 true라면 data 객체가 수정된 상태다.
+    */ 
+    if (DATA.migration(data, admin)) {
+        // 만약 true라면 data 객체가 수정되었다는 뜻이니, 파일에 저장하기
+        DATA.saveData(userDataFileName, data);
+        console.log(`마이그레이션 완료!`);
     }
-
-    // 만약 파일이 없었다면
-    return {};
+    
+    // 다타 객체 반환하기
+    return data;
 })();
 
-let room = (() => {
-    // room 파일이 있으면 room 변수에 저장하기
-    if (fs.existsSync(`./${folderName}/${roomFileName}`)) return DATA.loadData(roomFileName);
-    // 업스면 빈거 반환하기
-    return [];
-})();
+/*
+nullish 병합 연산자 사용해보기. 
+Data.loadData가 null 또는 undefined라면 [] 반환하기.
+Data.loadData가 null 또는 undefined둘 다 아니라면 loadData의 반환값을 room에 저장하기
+*/
+let room = DATA.loadData(roomFileName) ?? [];
 
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
