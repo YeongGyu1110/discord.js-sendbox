@@ -29,14 +29,24 @@ const admin = {
     level: 1
 };
 
-const fileName = './userDataBase/userData.json';
+const folderName = 'database';
+const fileName = 'userData.json';
+const roomFileName = 'roomData.json';
 
 const DATA = {};
-DATA.saveData = function(fileName, data) {
-    fs.writeFileSync(`${fileName}`, JSON.stringify(data, null, 2));
+/*
+folder 파라미터 기본값 지정. 
+saveData 호출 시 세 번째 아규먼트를 안주면 folderName 변수 값을 이름으로 하는 폴더 생성,
+그리고 그 폴더에 fileName을 이름으로 하는 json 파일 생성하기
+*/
+DATA.saveData = function(fileName, data, folder = folderName) {
+    if (!fs.existsSync(folder)) {
+        fs.mkdirSync(folder);
+    }
+    fs.writeFileSync(`${folder}/${fileName}`, JSON.stringify(data, null, 2));
 };
-DATA.loadData = function(fileName) {
-    return JSON.parse(fs.readFileSync(fileName, 'utf-8'));
+DATA.loadData = function(fileName, folder = folderName) {
+    return JSON.parse(fs.readFileSync(`${folder}/${fileName}`, 'utf-8'));
 };
 DATA.copyData = function(target) {
     return JSON.parse(JSON.stringify(target));
@@ -101,10 +111,29 @@ if (fs.existsSync(fileName)) {
     }
 }
 
+let room = [];
+
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
     message.send = (content) => message.channel.send(content);
     const msg = message.content.toLocaleLowerCase().trim();
+
+    if (msg == "on") {
+        // indexOf는 찾는 값이 배열에 없는 경우 -1을 반환함
+        if (room.indexOf(message.channel.id) == -1) {
+            room.push(message.channel.id);
+            DATA.saveData(roomFileName, room);
+            message.send(`활성화되었습니다.\n대상 이름: ${message.channel.name}\n대상 id: ${message.channel.id}`);            
+        } else {
+            message.send(`이미 활성화되었습니다.\n대상 이름: ${message.channel.name}\n대상 id: ${message.channel.id}`);
+        }
+    }
+    // if (!room.includes(message.channel.id)) return;
+    if (msg == "off") {
+        room.splice(room.indexOf(message.channel.id), 1);
+        DATA.saveData(roomFileName, room);
+        message.send(`비활성화되었습니다.\n대상 이름: ${message.channel.name}\n대상 id: ${message.channel.id}`);
+    }
 
     const userId = message.author.id;
     const userName = message.author.username;
