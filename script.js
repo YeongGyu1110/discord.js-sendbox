@@ -30,7 +30,7 @@ const admin = {
 };
 
 const folderName = 'database';
-const fileName = 'userData.json';
+const userDataFileName = 'userData.json';
 const roomFileName = 'roomData.json';
 
 const DATA = {};
@@ -98,20 +98,38 @@ DATA.migration = function(target, schema) {
     return isUpdated;
 }
 
-let userData = {};
-
-if (fs.existsSync(fileName)) {
-    // 로드된 json 값들을 모두 userData에 저장하기.
-    userData = DATA.loadData(fileName);
-
-    // 마이그레이션 함수의 boolean형 return 값을 조건문에 사용하기.
-    if (DATA.migration(userData, admin)) {
-        DATA.saveData(fileName, userData);
-        console.log(`마이그레이션 완료!`);
+let userData = (() => {
+    // userData 파일이 있으면
+    if (fs.existsSync(`./${folderName}/${userDataFileName}`)) {
+        // 일단 그 파일 읽어서 data 변수에 저장,
+        let data = DATA.loadData(userDataFileName);
+        
+        /*
+        일단 마이그레이션 시켜보기
+    
+        "마이그레이션 함수는 data 객체 자체를 변경시킨다."
+        따라서 값 할당이 없어도 메소드의 반환값이 true라면 data 객체가 수정된 상태다.
+        */ 
+        if (DATA.migration(data, admin)) {
+            // 만약 true라면 data 객체가 수정되었다는 뜻이니, 파일에 저장하기
+            DATA.saveData(userDataFileName, data);
+            console.log(`마이그레이션 완료!`);
+        }
+        
+        // 다타 객체 반환하기
+        return data; 
     }
-}
 
-let room = [];
+    // 만약 파일이 없었다면
+    return {};
+})();
+
+let room = (() => {
+    // room 파일이 있으면 room 변수에 저장하기
+    if (fs.existsSync(`./${folderName}/${roomFileName}`)) return DATA.loadData(roomFileName);
+    // 업스면 빈거 반환하기
+    return [];
+})();
 
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
@@ -157,7 +175,7 @@ client.on("messageCreate", async (message) => {
 
     if (msg == "hello") message.send(`hello.`);
 
-    DATA.saveData(fileName, userData);
+    DATA.saveData(userDataFileName, userData);
 });
 
 // 봇 객체에서 name 프로퍼티에다가 is ready! 붙여서 출력하기
