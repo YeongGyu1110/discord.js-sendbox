@@ -88,7 +88,7 @@ DATA.migration = function(target, schema) {
                 유저 객체에서 그 프로퍼터를 삭제한다.
                 그리고 업데이트 된거 있다고 알린다.
             */ 
-            if (schema[prop] === undefined && target[id] !== undefined) {
+            if (schema[prop] === undefined && target[id][prop] !== undefined) {
                 delete target[id][prop];
                 isUpdated = true;
             }
