@@ -40,9 +40,7 @@ saveData 호출 시 세 번째 아규먼트를 안주면 folderName 변수 값�
 그리고 그 폴더에 fileName을 이름으로 하는 json 파일 생성하기
 */
 DATA.saveData = function(fileName, data, folder = folderName) {
-    if (!fs.existsSync(folder)) {
-        fs.mkdirSync(folder);
-    }
+    if (!fs.existsSync(folder)) fs.mkdirSync(folder);
     fs.writeFileSync(`${folder}/${fileName}`, JSON.stringify(data, null, 2));
 };
 DATA.loadData = function(fileName, folder = folderName) {
