@@ -143,7 +143,8 @@ client.on("messageCreate", async (message) => {
         }
     }
     // if (!room.includes(message.channel.id)) return;
-    if (msg == "off") {
+    // if (msg == "off") {
+    if (msg == "off" && room.includes(message.channel.id)) {
         room.splice(room.indexOf(message.channel.id), 1);
         DATA.saveData(roomFileName, room);
         message.send(`비활성화되었습니다.\n대상 이름: ${message.channel.name}\n대상 id: ${message.channel.id}`);
