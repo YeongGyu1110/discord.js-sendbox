@@ -29,6 +29,19 @@ const admin = {
     level: 1
 };
 
+class User {
+    constructor(name, id) {
+        this.name = name;
+        this.id = id;
+        this.money = 0;
+        this.level = 1;
+    }
+
+    sayName() {
+        return this.name;
+    }
+}
+
 const folderName = 'database';
 const userDataFileName = 'userData.json';
 const roomFileName = 'roomData.json';
@@ -52,9 +65,7 @@ DATA.copyData = function(target) {
 };
 DATA.getUserData = function(userId, username) {
     if (!userData[userId]) {
-        userData[userId] = DATA.copyData(admin);
-        userData[userId].name = username;
-        userData[userId].id = userId;
+        userData[userId] = new User(username, userId);
     } else {
         // 이 유저는 객체가 이미 있다는 뜻.
     }
