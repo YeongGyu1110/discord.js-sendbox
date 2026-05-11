@@ -71,38 +71,60 @@ DATA.getUserData = function(userId, username) {
     }
     return userData[userId];
 };
-DATA.migration = function(target, schema) {
+DATA.migration = function(target) {
 
-    // 아규먼트로 전달 받은 target 파라미터는 모든 유저의 데이터다.
-    // 아규먼트로 전달 받은 schema 파라미터는 그냥 admin 객체이다.
-    
     let isUpdated = false;
 
-    for (const id in target) {
-        for (const prop in schema) {
-            if (target[id][prop] === undefined) {
-                target[id][prop] = DATA.copyData(schema[prop]);
-                isUpdated = true;
-            }
-        }
-    }
-    
-    // 전체 유저 데이터 하나하나 둘러본다.
-    for (const id in target) {
-        // 유저가 가진 프로퍼티를 하나하나 둘러본다.
-        for (const prop in target[id]) {
-            /*
-                만약 유저의 프로퍼티 값이 undefined가 아니고, (값이 있고)
-                admin 객체의 프로퍼티가 undefined라면 (admin 객체에는 없는 값이라면)
+    const schema = new User();
 
-                유저 객체에서 그 프로퍼터를 삭제한다.
-                그리고 업데이트 된거 있다고 알린다.
-            */ 
-            if (schema[prop] === undefined && target[id][prop] !== undefined) {
-                delete target[id][prop];
+    /*
+    {
+        '1': {...},
+        '2': {...},
+        '3': {...}
+    } 
+
+    1, 2, 3 차례대로 객체를 하나씩 돌기
+    */
+    for (const id in target) {
+        // 이번 유저 객체의 name과 id값으로 최신이지만, 기존 값과 동기화가 안된 유저 객체 하나 만들기.
+        const userInstance = new User(target[id].name, target[id].id);
+
+        // 스키마의 각 프로퍼티를 하나씩 돌기
+        for (const property in schema) {
+            // 만약 스키마의 이번 프로퍼티가 유저객체에선 없는 프로퍼티라면 
+            if (target[id][property] === undefined) {
+                // 스키마의 이번 프로퍼티를 복사해서 유저 인스턴스 프로퍼티에 집어넣기
+                userInstance[property] = DATA.copyData(schema[property]);
+                isUpdated = true;
+            } else {
+                // 만약 타겟에 있는 프로퍼티라면
+                // 그대로 유저 인스턴스에 그 값 넣기
+                userInstance[property] = target[id][property];
+            }
+        }
+
+        /*
+        'n': {
+            name: "name"
+            id: "id",
+            ...
+        }
+
+        이번 유저 객체의 프로퍼티를 한번씩 돌기
+        */
+        for (const property in target[id]) {
+            // 만약 유저 객체에는 있지만, 스키마에는 없는 프로퍼티라면
+            // ==> 걍 쓸모없는 프로퍼티가 있다면?
+            if (schema[property] === undefined) {
+                // 어차피 덮어씌워 당해 날아갈 프로퍼틴데, 걍 냅두기
+
                 isUpdated = true;
             }
         }
+
+        // 결국에 최신버전에서 생성된 객체(심지어 이전 값들의 동기화까지 완료된 객체)를 갖고 구버전 객체 위에 덮어씌워 구버전 객체를 날려버린다
+        target[id] = userInstance;
     }
     // 업데이트 여부 리턴하기
     return isUpdated;
@@ -121,10 +143,20 @@ let userData = (() => {
     "마이그레이션 함수는 data 객체 자체를 변경시킨다."
     따라서 값 할당이 없어도 메소드의 반환값이 true라면 data 객체가 수정된 상태다.
     */ 
-    if (DATA.migration(data, admin)) {
+    if (DATA.migration(data)) {
         // 만약 true라면 data 객체가 수정되었다는 뜻이니, 파일에 저장하기
         DATA.saveData(userDataFileName, data);
         console.log(`마이그레이션 완료!`);
+    } else {
+        // 마이그레이션(프로퍼티 추가/삭제)은 없었더라도, 
+        // 봇 재시작 시 JSON을 읽어오면서 클래스 메소드를 잃어버린 상태이기 때문에
+        // DATA.migration 내부의 `target[id] = userInstance;` 를 거쳐야 메소드 사용이 가능합니다.
+        // 따라서 isUpdated가 false여도 클래스 인스턴스로의 변환은 성공적으로 끝난 상태입니다.
+
+        // 제미나이 왈: 
+        // 만약 유저 객체에 메소드가 있었어도 저장하고 불러오면 메소드는 싹다날아감,
+        // 하지만 마이그레이션은 메소드를 다 갖고 있는 객체가 기존 객체를 덮어씌우는 방법이라서 메모리 상의 유저 객체에는 무조건 변화가 있다는 소리
+        // 
     }
     
     // 다타 객체 반환하기
