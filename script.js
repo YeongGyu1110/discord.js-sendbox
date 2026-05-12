@@ -57,11 +57,7 @@ DATA.copyData = function(target) {
     return JSON.parse(JSON.stringify(target));
 };
 DATA.getUserData = function(userId, username) {
-    if (!userData[userId]) {
-        userData[userId] = new User(username, userId);
-    } else {
-        // 이 유저는 객체가 이미 있다는 뜻.
-    }
+    if (!userData[userId]) userData[userId] = new User(username, userId);
     return userData[userId];
 };
 DATA.migration = function(target) {
