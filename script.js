@@ -22,13 +22,6 @@ const bot = (() => {
 
 const fs = require('fs');
 
-const admin = {
-    id: null,
-    name: null,
-    money: 0,
-    level: 1
-};
-
 class User {
     constructor(name, id) {
         this.name = name;
