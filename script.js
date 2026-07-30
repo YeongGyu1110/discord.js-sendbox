@@ -4,6 +4,8 @@ const client = new Client({ intents: [Guilds, GuildMessages, MessageContent] });
 
 const fs = require('fs');
 
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 class User {
     constructor(name, id) {
         this.name = name;
@@ -185,6 +187,12 @@ client.on("messageCreate", async (message) => {
     if (user === undefined) return;
 
     if (msg == "hello") message.send(`hello.`);
+    if (msg == "delay") {
+        message.send('기다리세요.');
+        // max와 min 사이의 정수 구하기 공식: Math.floor(Math.random() * (max - min + 1)) + min
+        await delay(Math.floor(Math.random() * (10000 - 5000 + 1)) + 5000);
+        message.send('다 되었어요!');
+    }
 
     DATA.saveData(userDataFileName, userData);
 });
